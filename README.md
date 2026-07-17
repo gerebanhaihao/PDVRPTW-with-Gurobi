@@ -4,14 +4,12 @@
 
 This project implements a **Pickup and Delivery Vehicle Routing Problem with Time Windows (PDVRPTW)** solver using **Gurobi** optimization engine. The model handles simultaneous pickup and delivery operations with time window constraints, capacity limits, and multiple vehicles.
 
-## Key Features
+## Model Paradigm
 
-- Multi-vehicle support with customizable vehicle count
-- Time window constraints for each node (earliest/latest service time)
-- Capacity constraints with pickup and delivery quantities
-- Pickup-before-delivery precedence constraints
-- Visualized route planning with directional arrows
-- Scenario comparison: 1-vehicle, 2-vehicle, and multi-vehicle configurations
+- Multi-vehicle support with customizable vehicle count, each with distinct start and end depots (non-closed loops)
+- Paired pickup-delivery nodes & pickup-before-delivery precedence constraints
+- Hard time windows: earliest/latest service time for each node
+- Identical capacity and speed across all vehicles
 
 ## Data Structure
 
@@ -39,21 +37,21 @@ Each node in the dataset contains:
 
 Minimize total travel distance:
 
-$$ \text{Minimize} \sum_{i} \sum_{j} \sum_{k} c_{ij} \cdot x_{ijk} $$
+$$ \text{Min} \sum_{i} \sum_{j} \sum_{k} c_{ij} \cdot x_{ijk} $$
 
 ### Constraints
 
-1. Each node is visited exactly once
-2. Pickup and delivery paired nodes are served by the same vehicle
-3. Each vehicle departs from its unique start point
-4. Flow conservation: arriving vehicles must depart
-5. Each vehicle returns to its unique end point
-6. Time feasibility: arrival time + service + travel ≤ next arrival
-7. Load feasibility: load updates after pickup/delivery
-8. Pickup before delivery: pickup node must be visited before its paired delivery
-9. Total route time limit per vehicle
-10. Time window constraints: arrivals must fall within [earliest, latest]
-11. Capacity constraints: load must stay within [0, vehicle capacity]
+1. Each node is served exactly once
+2. Each pickup-delivery pair is handled by the same vehicle
+3. Each vehicle starts from its own depot
+4. Flow conservation: every arrival must depart
+5. Each vehicle ends at its own depot
+6. Time consistency: arrival + service + travel ≤ next arrival
+7. Load updates after each pickup/delivery
+8. Pickup must precede delivery for each paired order
+9. Total route time cannot exceed vehicle limit
+10. Arrival times must fall within node time windows
+11. Vehicle load must stay within capacity bounds
 
 ## Scenarios
 
@@ -68,9 +66,9 @@ The solver generates route maps with:
 - Directional arrows indicating travel direction
 - Different node types (start points, pickup points, delivery points, end points)
 
-## Dependencies
+## Requirements
 
-- Python 3.7+
-- Gurobi
-- NumPy
-- Matplotlib
+- Python 3.11
+- Gurobi Optimizer 11.0.3
+- NumPy 1.26.4
+- Matplotlib 3.9.2
